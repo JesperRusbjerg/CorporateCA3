@@ -6,16 +6,40 @@
 package facade;
 
 import dto.PersonDTO;
+import entity.User;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 
 /**
  *
  * @author adamlass
  */
 public class Facade {
-    
-    public static List<PersonDTO> SWAPI(int amount){
-       return null; 
+
+    EntityManagerFactory emf;
+
+    public Facade(EntityManagerFactory emf) {
+        this.emf = emf;
     }
-    
+
+    private EntityManager getEm() {
+        return emf.createEntityManager();
+    }
+
+    public List<User> getAllUsers() {
+        EntityManager em = getEm();
+        try {
+            TypedQuery<User> tq = em.createQuery("Select u from User u", User.class);
+            return tq.getResultList();
+        }
+        finally {
+            em.close();
+        }
+    }
+
+    public static List<PersonDTO> SWAPI(int amount) {
+        return null;
+    }
 }
