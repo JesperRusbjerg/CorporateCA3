@@ -39,6 +39,17 @@ public class Facade {
         }
     }
 
+    public User getUser(String email) {
+        EntityManager em = getEm();
+        try {
+            em.getTransaction().begin();
+            return null;
+        }
+        finally {
+
+        }
+    }
+
     public static List<PersonDTO> SWAPI(int amount) {
         return null;
     }

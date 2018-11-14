@@ -44,16 +44,12 @@ class ApiFacade {
 
   login = (email, pass) => {
     const options = this.makeOptions("POST", true, { email: email, password: pass })
-    fetch(URL + "/api/login", options, true)
-      .then(handleHttpErrors)
-      .then(res => { this.setToken(res.token) })
+    return fetch(URL + "/api/login", options, true).then(handleHttpErrors)
   }
 
   signUp = (pass, email) => {
     const options = this.makeOptions("POST", true, { password: pass, email: email })
-    fetch(URL + "api/login/create", options, true)
-      .then(handleHttpErrors)
-      .then(res => { this.setToken(res.token) })
+    return fetch(URL + "api/login/create", options, true).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of StarWars characters
@@ -69,9 +65,9 @@ class ApiFacade {
   }
 
   //Returns promise - Contains edited user {email and role}
-  editUser = (id) => {
+  editUser = (email) => {
     const options = this.makeOptions("PUT", true)
-    return fetch(URL + `/api/users/${id}`, options, true).then(handleHttpErrors)
+    return fetch(URL + `/api/users/${email}`, options, true).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of all roles
