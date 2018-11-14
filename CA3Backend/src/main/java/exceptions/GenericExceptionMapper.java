@@ -75,9 +75,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable>  {
         } 
         if(ex instanceof AuthenticationException){
             return Response.Status.FORBIDDEN;
-        } else {
+        }
+        if(ex instanceof NotFoundException){
+            return Response.Status.NOT_FOUND;
+        }
+        else {
             return Response.Status.INTERNAL_SERVER_ERROR;
         }
+       
     }
     
     //Small hack, to provide json-error response in the filter
