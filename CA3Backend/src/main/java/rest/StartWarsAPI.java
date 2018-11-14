@@ -21,7 +21,7 @@ import javax.ws.rs.core.MediaType;
  * @author adamlass
  */
 @Path("swapi")
-@RolesAllowed("user")
+
 public class StartWarsAPI {
 
     @Context
@@ -37,6 +37,7 @@ public class StartWarsAPI {
      * Retrieves representation of an instance of rest.StartWarsAPI
      * @return an instance of java.lang.String
      */
+    @RolesAllowed({"user","admin"})
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getJson() {
