@@ -3,11 +3,15 @@ import { View, Text, TouchableHighlight, TextInput, Alert } from 'react-native';
 import Styles from './../styles/Styles';
 import ApiFacade from './../facade/apiFacade';
 
-export default class LoginScreen extends React.Component {
+export default class CreateUser extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { email: "user@gmail.com", password: "test" };
+        this.state = {
+            email: this.props.navigation.getParam("email", ""),
+            password: this.props.navigation.getParam("password", ""),
+            rePassword: "",
+        }
     }
 
 
@@ -27,41 +31,42 @@ export default class LoginScreen extends React.Component {
                     secureTextEntry
                     style={Styles.input}
                 />
-                <TouchableHighlight onPress={this.login}>
-                    <View style={Styles.button}>
-                        <Text style={Styles.buttonText}>
-                            Login
-                        </Text>
-                    </View>
-                </TouchableHighlight>
-                <TouchableHighlight onPress={() => this.props.navigation.navigate("CreateUser", {email: this.state.email, password: this.state.password})}>
+                <TextInput
+                    onChangeText={(rePassword) => this.setState({ rePassword })}
+                    value={this.state.rePassword}
+                    placeholder="Repeat Password"
+                    secureTextEntry
+                    style={Styles.input}
+                />
+                <TouchableHighlight onPress={this.createUser}>
                     <View style={Styles.button}>
                         <Text style={Styles.buttonText}>
                             Create User
-                        </Text>
+                    </Text>
                     </View>
                 </TouchableHighlight>
-
             </View>
         );
     }
 
-    login = async () => {
-        const email = this.state.email;
-        const password = this.state.password;
-        if (!email || !password) {
-            Alert.alert("Fill out all forms");
+    createUser = async () => {
+        const { email, password, rePassword } = this.state;
+        if (!email || !password || !rePassword) {
+            Alert.alert("Please fill out all forms");
             return;
         }
-        const res = await ApiFacade.login(email, password);
+        if (password !== rePassword) {
+            Alert.alert("Passwords do not match");
+            this.setState({ password: "", rePassword: "" });
+            return;
+        }
+
+        const res = await ApiFacade.signUp(email, password);
         if(res.status !== 200){
-            Alert.alert("Could not login");
+            console.log(res);
+            Alert.alert("Could not create user");
             return;
         }
         this.props.navigation.navigate("MainMenu");
-    }
-
-    createUser = () => {
-
     }
 }
