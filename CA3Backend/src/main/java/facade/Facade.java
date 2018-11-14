@@ -10,17 +10,38 @@ import dto.PersonDTO;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import dto.RoleDTO;
+import dto.UserDTO;
+import entity.User;
+import exceptions.NotFoundException;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 
 /**
  *
  * @author adamlass
  */
 public class Facade {
+
+    EntityManagerFactory emf;
+    
+    public Facade(EntityManagerFactory emf) {
+        this.emf = emf;
+    }
+
+    public Facade() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private EntityManager getEm() {
+        return emf.createEntityManager();
+    }
 
     public List<PersonDTO> SWAPI(int amount) throws Exception {
         List<PersonDTO> res = new ArrayList<>();
@@ -54,5 +75,52 @@ public class Facade {
         }
         return res;
     }
+    
+    public List<UserDTO> getAllUsers() throws NotFoundException {
+        EntityManager em = getEm();
+        List<UserDTO> list;
+        try {
+            TypedQuery<UserDTO> tq = em.createQuery("Select new dto.UserDTO(u) from User u", UserDTO.class);
+            list = tq.getResultList();
+        }
+        finally {
+            em.close();
+        }
+        if(list.get(0) == null){
+            throw new NotFoundException("No users could be found");
+        }
+        return list;
+    }
 
+    public UserDTO getUser(String email) throws NotFoundException {
+        EntityManager em = getEm();
+        User user = null;
+        try {
+            em.getTransaction().begin();
+            user = em.find(User.class, email);
+        }
+        finally {
+            em.close();
+        }
+        if(user == null){
+            throw new NotFoundException("The user could not be found");
+        }
+        return new UserDTO(user);
+    }
+    
+    public List<RoleDTO> getAllRoles() throws NotFoundException {
+        EntityManager em = getEm();
+        List<RoleDTO> list;
+        try {
+            TypedQuery<RoleDTO> tq = em.createQuery("Select new dto.RoleDTO(r) from Role r", RoleDTO.class);
+            list = tq.getResultList();
+        }
+        finally {
+            em.close();
+        }
+        if(list.get(0) == null){
+            throw new NotFoundException("No roles could be found");
+        }
+        return list;
+    }
 }

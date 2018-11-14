@@ -55,7 +55,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable>  {
     public Response toResponse(Throwable  ex) {
        
         Response.StatusType type = getStatusType(ex);
-        Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+//        Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
 
         Error error = new Error(
                 type.getStatusCode(),
