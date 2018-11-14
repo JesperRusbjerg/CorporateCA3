@@ -5,15 +5,20 @@
  */
 package rest;
 
+import com.google.gson.Gson;
+import dto.PersonDTO;
+import facade.Facade;
+import java.util.List;
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * REST Web Service
@@ -26,11 +31,16 @@ public class StartWarsAPI {
 
     @Context
     private UriInfo context;
+    private Facade facade;
+    private Gson gson;
+    
 
     /**
      * Creates a new instance of StartWarsAPI
      */
     public StartWarsAPI() {
+        this.facade = new Facade(Persistence.createEntityManagerFactory("pu"));
+        this.gson = new Gson();
     }
 
     /**
@@ -40,16 +50,15 @@ public class StartWarsAPI {
     @RolesAllowed({"user","admin"})
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getJson() {
-        return "hej";
+    public Response getJson(@QueryParam("amount") int amount) throws Exception {
+        System.out.println("amount: " + amount);
+        List<PersonDTO> persons = facade.SWAPI(amount);
+        return Response
+                .ok()
+                .entity(gson.toJson(persons))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+        
     }
 
-    /**
-     * PUT method for updating or creating an instance of StartWarsAPI
-     * @param content representation for the resource
-     */
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void putJson(String content) {
-    }
 }

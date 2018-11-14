@@ -5,8 +5,19 @@
  */
 package facade;
 
+import callable.SWAPICallable;
 import dto.PersonDTO;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import dto.RoleDTO;
+import dto.UserDTO;
 import entity.User;
+import exceptions.NotFoundException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,7 +30,7 @@ import javax.persistence.TypedQuery;
 public class Facade {
 
     EntityManagerFactory emf;
-
+    
     public Facade(EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -28,29 +39,84 @@ public class Facade {
         return emf.createEntityManager();
     }
 
-    public List<User> getAllUsers() {
+    public List<PersonDTO> SWAPI(int amount) throws Exception {
+        List<PersonDTO> res = new ArrayList<>();
+        
+        //Setting up Executor service with thread amount equal to system cores
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        ExecutorService es = Executors.newFixedThreadPool(bean.getThreadCount());
+
+        //Creating urls
+        List<String> urls = new ArrayList<>();
+        for (int i = 1; i <= amount; i++) {
+            urls.add("https://swapi.co/api/people/" + i);
+        }
+
+        //Creating futures
+        ArrayList<Future<PersonDTO>> futures = new ArrayList<>();
+        for (String url : urls) {
+            SWAPICallable callable = new SWAPICallable(url);
+            futures.add(es.submit(callable));
+        }
+
+        //Getting responses from futures
+        for (Future<PersonDTO> future : futures) {
+            try {
+                PersonDTO resp = future.get();
+                res.add(resp);
+            } catch (InterruptedException | ExecutionException e) {
+                throw e;
+            }
+
+        }
+        return res;
+    }
+    
+    public List<UserDTO> getAllUsers() throws NotFoundException {
         EntityManager em = getEm();
+        List<UserDTO> list;
         try {
-            TypedQuery<User> tq = em.createQuery("Select u from User u", User.class);
-            return tq.getResultList();
+            TypedQuery<UserDTO> tq = em.createQuery("Select new dto.UserDTO(u) from User u", UserDTO.class);
+            list = tq.getResultList();
         }
         finally {
             em.close();
         }
+        if(list.get(0) == null){
+            throw new NotFoundException("No users could be found");
+        }
+        return list;
     }
 
-    public User getUser(String email) {
+    public UserDTO getUser(String email) throws NotFoundException {
         EntityManager em = getEm();
+        User user = null;
         try {
             em.getTransaction().begin();
-            return null;
+            user = em.find(User.class, email);
         }
         finally {
-
+            em.close();
         }
+        if(user == null){
+            throw new NotFoundException("The user could not be found");
+        }
+        return new UserDTO(user);
     }
-
-    public static List<PersonDTO> SWAPI(int amount) {
-        return null;
+    
+    public List<RoleDTO> getAllRoles() throws NotFoundException {
+        EntityManager em = getEm();
+        List<RoleDTO> list;
+        try {
+            TypedQuery<RoleDTO> tq = em.createQuery("Select new dto.RoleDTO(r) from Role r", RoleDTO.class);
+            list = tq.getResultList();
+        }
+        finally {
+            em.close();
+        }
+        if(list.get(0) == null){
+            throw new NotFoundException("No roles could be found");
+        }
+        return list;
     }
 }

@@ -55,7 +55,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable>  {
     public Response toResponse(Throwable  ex) {
        
         Response.StatusType type = getStatusType(ex);
-        Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
+//        Logger.getLogger(GenericExceptionMapper.class.getName()).log(Level.SEVERE, null, ex);
 
         Error error = new Error(
                 type.getStatusCode(),
@@ -75,9 +75,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable>  {
         } 
         if(ex instanceof AuthenticationException){
             return Response.Status.FORBIDDEN;
-        } else {
+        }
+        if(ex instanceof NotFoundException){
+            return Response.Status.NOT_FOUND;
+        }
+        else {
             return Response.Status.INTERNAL_SERVER_ERROR;
         }
+       
     }
     
     //Small hack, to provide json-error response in the filter
