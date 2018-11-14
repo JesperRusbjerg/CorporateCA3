@@ -10,6 +10,7 @@ import dto.PersonDTO;
 import facade.Facade;
 import java.util.List;
 import javax.annotation.security.RolesAllowed;
+import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -38,7 +39,7 @@ public class StartWarsAPI {
      * Creates a new instance of StartWarsAPI
      */
     public StartWarsAPI() {
-        this.facade = new Facade();
+        this.facade = new Facade(Persistence.createEntityManagerFactory("pu"));
         this.gson = new Gson();
     }
 

@@ -35,10 +35,6 @@ public class Facade {
         this.emf = emf;
     }
 
-    public Facade() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     private EntityManager getEm() {
         return emf.createEntityManager();
     }

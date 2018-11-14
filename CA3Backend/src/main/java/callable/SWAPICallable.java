@@ -7,7 +7,6 @@ package callable;
 
 import com.google.gson.Gson;
 import dto.PersonDTO;
-import exceptions.AuthenticationException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
