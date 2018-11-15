@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import dto.RoleDTO;
 import dto.UserDTO;
+import entity.Role;
 import entity.User;
 import exceptions.NotFoundException;
 import java.util.List;
@@ -30,7 +31,7 @@ import javax.persistence.TypedQuery;
 public class Facade {
 
     EntityManagerFactory emf;
-    
+
     public Facade(EntityManagerFactory emf) {
         this.emf = emf;
     }
@@ -45,7 +46,7 @@ public class Facade {
 
     public List<PersonDTO> SWAPI(int amount) throws Exception {
         List<PersonDTO> res = new ArrayList<>();
-        
+
         //Setting up Executor service with thread amount equal to system cores
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
         ExecutorService es = Executors.newFixedThreadPool(bean.getThreadCount());
@@ -68,14 +69,15 @@ public class Facade {
             try {
                 PersonDTO resp = future.get();
                 res.add(resp);
-            } catch (InterruptedException | ExecutionException e) {
+            }
+            catch (InterruptedException | ExecutionException e) {
                 throw e;
             }
 
         }
         return res;
     }
-    
+
     public List<UserDTO> getAllUsers() throws NotFoundException {
         EntityManager em = getEm();
         List<UserDTO> list;
@@ -86,28 +88,42 @@ public class Facade {
         finally {
             em.close();
         }
-        if(list.get(0) == null){
+        if (list.get(0) == null) {
             throw new NotFoundException("No users could be found");
         }
         return list;
     }
 
-    public UserDTO getUser(String email) throws NotFoundException {
+    public UserDTO editUser(String email) throws NotFoundException {
         EntityManager em = getEm();
         User user = null;
         try {
             em.getTransaction().begin();
             user = em.find(User.class, email);
+            if (user == null) {
+                throw new NotFoundException("The user could not be found");
+            }
+            List<Role> roles = user.getRoleList();
+            boolean addAdmin = true;
+            for (Role role : roles) {
+                if(role.getRoleName().equals("admin")){
+                    roles.remove(role);
+                    role.getUserList().remove(user);
+                    addAdmin = false;
+                }
+            }
+            if(addAdmin){
+                Role role = new Role("admin");
+                roles.add(role);
+            }
+            em.merge(user);
         }
         finally {
             em.close();
         }
-        if(user == null){
-            throw new NotFoundException("The user could not be found");
-        }
         return new UserDTO(user);
     }
-    
+
     public List<RoleDTO> getAllRoles() throws NotFoundException {
         EntityManager em = getEm();
         List<RoleDTO> list;
@@ -118,7 +134,7 @@ public class Facade {
         finally {
             em.close();
         }
-        if(list.get(0) == null){
+        if (list.get(0) == null) {
             throw new NotFoundException("No roles could be found");
         }
         return list;
