@@ -25,7 +25,7 @@ public class SWAPICallable implements Callable<PersonDTO> {
 
     public SWAPICallable(String url) {
         this.url = url;
-        if(gson == null){
+        if (gson == null) {
             this.gson = new GsonBuilder().setPrettyPrinting().create();
         }
     }
@@ -43,6 +43,9 @@ public class SWAPICallable implements Callable<PersonDTO> {
         connection.connect();
 
         int code = connection.getResponseCode();
+        if (code != 200) {
+            System.out.println(url + ": " + code);
+        }
         if (code == 200) {
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder sb = new StringBuilder();
@@ -52,11 +55,11 @@ public class SWAPICallable implements Callable<PersonDTO> {
             }
             br.close();
             String jsonStr = sb.toString();
+//            System.out.println(url + ": " + jsonStr);
             PersonDTO person = gson.fromJson(jsonStr, PersonDTO.class);
             return person;
-        } else {
-            throw new Error("Could not use SWAPI");
         }
+        return null;
     }
 
 }

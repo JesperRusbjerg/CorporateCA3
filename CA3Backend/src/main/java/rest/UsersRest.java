@@ -11,15 +11,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dto.UserDTO;
 import entity.User;
-import entity.UserFacade;
-import exceptions.AuthenticationException;
 import exceptions.NotFoundException;
 import facade.Facade;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.security.DeclareRoles;
-import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
@@ -35,7 +29,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import security.JWTSecurityContext;
-import security.LoginEndpoint;
 
 /**
  * REST Web Service
@@ -60,7 +53,7 @@ public class UsersRest {
     }
 
     @GET
-    @RolesAllowed("admin")
+    @RolesAllowed({"admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() throws NotFoundException {
         List<UserDTO> users = facade.getAllUsers();
