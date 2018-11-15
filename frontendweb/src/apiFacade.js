@@ -1,9 +1,19 @@
-const URL = ""
+const URL = "https://www.corporategroup.dk/CA3"
 
-function handleHttpErrors(res) {
+function jwtDecode(t) {
+  let token = {};
+  token.raw = t;
+  token.header = JSON.parse(window.atob(t.split('.')[0]));
+  token.payload = JSON.parse(window.atob(t.split('.')[1]));
+  return (token)
+}
+
+async function handleHttpErrors(res) {
   if (!res.ok) {
-    return Promise.reject({ status: res.status, fullError: res.json() })
+    const fullError = await res.json();
+   throw {status: res.status, fullError};
   }
+  
   return res.json();
 }
 
@@ -25,8 +35,13 @@ class ApiFacade {
     return opts;
   }
 
+
   setToken = (token) => {
     localStorage.setItem('jwtToken', token)
+
+    var decoded = jwtDecode(token)
+    localStorage.setItem('email', decoded.payload.email)
+    localStorage.setItem('role', decoded.payload.roles)
   }
 
   getToken = () => {
@@ -40,14 +55,20 @@ class ApiFacade {
 
   logout = () => {
     localStorage.removeItem("jwtToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
   }
 
-  login = (email, pass) => {
+  login = async (email, pass) => {
     const options = this.makeOptions("POST", true, { email: email, password: pass })
-    fetch(URL + "/api/login", options, true)
-      .then(handleHttpErrors)
-      .then(res => { this.setToken(res.token) })
-  }
+   try{ 
+    const res = await fetch(URL + "/api/login", options, true)
+    const json = await (handleHttpErrors(res))
+    this.setToken(json.token)
+   }catch(e){
+     return e;
+   }
+    }
 
   signUp = (pass, email) => {
     const options = this.makeOptions("POST", true, { password: pass, email: email })
@@ -57,9 +78,9 @@ class ApiFacade {
   }
 
   //Returns promise - Contains array of StarWars characters
-  starWarsFetch = (amount) => {
-    const options = this.makeOptions("GET", true, { amount: amount })
-    return fetch(URL + "api/swapi", options, true).then(handleHttpErrors)
+  starWarsFetch = async (amount) => {
+    const options = this.makeOptions("GET", true)
+    return await fetch(URL + `/api/swapi?amount=${amount}`, options, true).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of all users
