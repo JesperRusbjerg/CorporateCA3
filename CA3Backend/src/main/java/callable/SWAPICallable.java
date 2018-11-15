@@ -6,6 +6,7 @@
 package callable;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dto.PersonDTO;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,7 +26,7 @@ public class SWAPICallable implements Callable<PersonDTO> {
     public SWAPICallable(String url) {
         this.url = url;
         if(gson == null){
-            this.gson = new Gson();
+            this.gson = new GsonBuilder().setPrettyPrinting().create();
         }
     }
 

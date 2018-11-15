@@ -72,7 +72,7 @@ public class UsersRest {
     @Path("{email}")
     @RolesAllowed({"admin"})
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getUser(@Context JWTSecurityContext securityContext, @PathParam("email") String email) throws NotFoundException {
+    public Response editUser(@Context JWTSecurityContext securityContext, @PathParam("email") String email) throws NotFoundException {
         UserDTO userDTO = facade.editUser(email);
         String json = gson.toJson(userDTO);
         return Response.ok().entity(json).build();
