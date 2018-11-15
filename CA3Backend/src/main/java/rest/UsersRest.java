@@ -13,12 +13,14 @@ import facade.Facade;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
@@ -44,6 +46,7 @@ public class UsersRest {
     }
 
     @GET
+    @RolesAllowed({"user","admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllUsers() throws NotFoundException {
         List<UserDTO> users = facade.getAllUsers();
@@ -51,11 +54,12 @@ public class UsersRest {
         return Response.ok().entity(json).build();
     }
 
-    @GET
+    @PUT
     @Path("{email}")
+    @RolesAllowed("admin")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("email") String email) throws NotFoundException {
-        UserDTO userDTO = facade.getUser(email);
+        UserDTO userDTO = facade.editUser(email);
         String json = gson.toJson(userDTO);
         return Response.ok().entity(json).build();
     }
