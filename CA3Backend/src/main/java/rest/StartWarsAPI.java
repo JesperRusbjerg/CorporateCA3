@@ -32,6 +32,7 @@ public class StartWarsAPI {
 
     @Context
     private UriInfo context;
+    
     private Facade facade;
     private Gson gson;
     
@@ -54,7 +55,8 @@ public class StartWarsAPI {
     @GET
     @RolesAllowed({"user","admin"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJson(@QueryParam("amount") int amount) throws Exception {
+    public Response getJson() throws Exception {
+        int amount = 10;
         System.out.println("amount: " + amount);
         List<PersonDTO> persons = facade.SWAPI(amount);
         return Response

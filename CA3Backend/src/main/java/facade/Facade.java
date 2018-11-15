@@ -29,6 +29,7 @@ import exceptions.AuthenticationException;
 import exceptions.NotFoundException;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -61,7 +62,8 @@ public class Facade {
         //Creating urls
         List<String> urls = new ArrayList<>();
         for (int i = 1; i <= amount; i++) {
-            urls.add("https://swapi.co/api/people/" + i);
+            int personIndex = new Random().nextInt(87) + 1;
+            urls.add("https://swapi.co/api/people/" + personIndex);
         }
 
         //Creating futures
@@ -76,8 +78,7 @@ public class Facade {
             try {
                 PersonDTO resp = future.get();
                 res.add(resp);
-            }
-            catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw e;
             }
 
@@ -89,14 +90,13 @@ public class Facade {
         EntityManager em = getEm();
         try {
             em.getTransaction().begin();
-            Role userRole = em.find(Role.class,"user");
+            Role userRole = em.find(Role.class, "user");
             user.addRole(userRole);
             em.persist(user);
-            em.getTransaction().commit();  
-        } catch (Exception e){
+            em.getTransaction().commit();
+        } catch (Exception e) {
             throw new Exception("Could not save new user");
-        }
-        finally {
+        } finally {
             em.close();
         }
     }
@@ -107,8 +107,7 @@ public class Facade {
         try {
             TypedQuery<UserDTO> tq = em.createQuery("Select new dto.UserDTO(u) from User u", UserDTO.class);
             list = tq.getResultList();
-        }
-        finally {
+        } finally {
             em.close();
         }
         if (list.get(0) == null) {
@@ -141,8 +140,7 @@ public class Facade {
             }
             em.merge(user);
             em.getTransaction().commit();
-        }
-        finally {
+        } finally {
             em.close();
         }
         return new UserDTO(user);
@@ -154,8 +152,7 @@ public class Facade {
         try {
             TypedQuery<RoleDTO> tq = em.createQuery("Select new dto.RoleDTO(r) from Role r", RoleDTO.class);
             list = tq.getResultList();
-        }
-        finally {
+        } finally {
             em.close();
         }
         if (list.get(0) == null) {
@@ -163,29 +160,30 @@ public class Facade {
         }
         return list;
     }
+
     public String createToken(String email, List<String> roles) throws JOSEException {
 
-    StringBuilder res = new StringBuilder();
-    for (String string : roles) {
-      res.append(string);
-      res.append(",");
+        StringBuilder res = new StringBuilder();
+        for (String string : roles) {
+            res.append(string);
+            res.append(",");
+        }
+        String rolesAsString = res.length() > 0 ? res.substring(0, res.length() - 1) : "";
+        String issuer = "semesterdemo_security_course";
+
+        JWSSigner signer = new MACSigner(SharedSecret.getSharedKey());
+        Date date = new Date();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(email)
+                .claim("email", email)
+                .claim("roles", rolesAsString)
+                .claim("issuer", issuer)
+                .issueTime(date)
+                .expirationTime(new Date(date.getTime() + TOKEN_EXPIRE_TIME))
+                .build();
+        SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+        signedJWT.sign(signer);
+        return signedJWT.serialize();
+
     }
-    String rolesAsString = res.length() > 0 ? res.substring(0, res.length() - 1) : "";
-    String issuer = "semesterdemo_security_course";
-
-    JWSSigner signer = new MACSigner(SharedSecret.getSharedKey());
-    Date date = new Date();
-    JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-            .subject(email)
-            .claim("email", email)
-            .claim("roles", rolesAsString)
-            .claim("issuer", issuer)
-            .issueTime(date)
-            .expirationTime(new Date(date.getTime() + TOKEN_EXPIRE_TIME))
-            .build();
-    SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
-    signedJWT.sign(signer);
-    return signedJWT.serialize();
-
-  }
 }
