@@ -63,7 +63,6 @@ export default class CreateUser extends React.Component {
 
         const res = await ApiFacade.signUp(email, password);
         if(res.status !== 200){
-            console.log(res);
             Alert.alert("Could not create user");
             return;
         }

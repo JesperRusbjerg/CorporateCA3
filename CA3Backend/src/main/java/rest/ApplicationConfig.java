@@ -32,7 +32,6 @@ public class ApplicationConfig extends Application {
         resources.add(cors.CorsRequestFilter.class);
         resources.add(cors.CorsResponseFilter.class);
         resources.add(exceptions.GenericExceptionMapper.class);
-        resources.add(org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper.class);
         resources.add(org.eclipse.persistence.jpa.rs.exceptions.ConversionExceptionMapper.class);
         resources.add(org.eclipse.persistence.jpa.rs.exceptions.DatabaseExceptionMapper.class);
         resources.add(org.eclipse.persistence.jpa.rs.exceptions.EntityExistsExceptionMapper.class);
@@ -69,6 +68,7 @@ public class ApplicationConfig extends Application {
         resources.add(org.eclipse.persistence.jpa.rs.resources.unversioned.SingleResultQueryResource.class);
         resources.add(org.glassfish.jersey.jsonb.internal.JsonBindingProvider.class);
         resources.add(org.glassfish.jersey.server.wadl.internal.WadlResource.class);
+        resources.add(rest.DummyData.class);
         resources.add(rest.RolesREST.class);
         resources.add(rest.StartWarsAPI.class);
         resources.add(rest.UsersRest.class);
