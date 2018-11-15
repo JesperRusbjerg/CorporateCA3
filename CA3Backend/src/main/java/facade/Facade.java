@@ -62,9 +62,16 @@ public class Facade {
         //Creating urls
         List<String> urls = new ArrayList<>();
         for (int i = 1; i <= amount; i++) {
-            int personIndex = new Random().nextInt(87) + 1;
+            int personIndex = 0;
+            do{
+               personIndex = new Random().nextInt(87) + 1;
+            } while (personIndex == 17);
             urls.add("https://swapi.co/api/people/" + personIndex);
         }
+
+//        for (String url : urls) {
+//            System.out.println(url);
+//        }
 
         //Creating futures
         ArrayList<Future<PersonDTO>> futures = new ArrayList<>();
@@ -77,8 +84,11 @@ public class Facade {
         for (Future<PersonDTO> future : futures) {
             try {
                 PersonDTO resp = future.get();
-                res.add(resp);
-            } catch (InterruptedException | ExecutionException e) {
+                if (resp != null) {
+                    res.add(resp);
+                }
+            }
+            catch (InterruptedException | ExecutionException e) {
                 throw e;
             }
 
@@ -94,9 +104,11 @@ public class Facade {
             user.addRole(userRole);
             em.persist(user);
             em.getTransaction().commit();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new Exception("Could not save new user");
-        } finally {
+        }
+        finally {
             em.close();
         }
     }
@@ -107,7 +119,8 @@ public class Facade {
         try {
             TypedQuery<UserDTO> tq = em.createQuery("Select new dto.UserDTO(u) from User u", UserDTO.class);
             list = tq.getResultList();
-        } finally {
+        }
+        finally {
             em.close();
         }
         if (list.get(0) == null) {
@@ -140,7 +153,8 @@ public class Facade {
             }
             em.merge(user);
             em.getTransaction().commit();
-        } finally {
+        }
+        finally {
             em.close();
         }
         return new UserDTO(user);
@@ -152,7 +166,8 @@ public class Facade {
         try {
             TypedQuery<RoleDTO> tq = em.createQuery("Select new dto.RoleDTO(r) from Role r", RoleDTO.class);
             list = tq.getResultList();
-        } finally {
+        }
+        finally {
             em.close();
         }
         if (list.get(0) == null) {

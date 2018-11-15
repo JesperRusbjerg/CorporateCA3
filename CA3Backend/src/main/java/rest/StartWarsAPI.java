@@ -32,13 +32,12 @@ public class StartWarsAPI {
 
     @Context
     private UriInfo context;
-    
+
     private Facade facade;
     private Gson gson;
-    
+
     @Context
     SecurityContext securityContext;
-    
 
     /**
      * Creates a new instance of StartWarsAPI
@@ -50,13 +49,14 @@ public class StartWarsAPI {
 
     /**
      * Retrieves representation of an instance of rest.StartWarsAPI
+     *
      * @return an instance of java.lang.String
      */
     @GET
-    @RolesAllowed({"user","admin"})
+    @RolesAllowed({"user", "admin"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJson() throws Exception {
-        int amount = 10;
+    public Response getJson(@QueryParam("amount") int amount) throws Exception {
+//        int amount = 10;
         System.out.println("amount: " + amount);
         List<PersonDTO> persons = facade.SWAPI(amount);
         return Response
@@ -64,7 +64,7 @@ public class StartWarsAPI {
                 .entity(gson.toJson(persons))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
-        
+
     }
 
 }
