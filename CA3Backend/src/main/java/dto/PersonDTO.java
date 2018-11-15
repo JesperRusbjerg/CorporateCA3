@@ -15,7 +15,9 @@ public class PersonDTO {
             skin_color, 
             eye_color,
             birth_year,
+            
             gender;
+    
     public int height,
             mass;
 
