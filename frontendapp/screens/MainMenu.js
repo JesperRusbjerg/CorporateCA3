@@ -44,7 +44,7 @@ function DefaultMenu({email, navigate}) {
                 Hallo {email}
             </Text>
             <MenuButton title="SWAPI" navigateTo="SWAPI" navigate={navigate} />
-            <MenuButton title="Big Data" navigateTo="BigDataScreen" navigate={navigate} />
+            <MenuButton title="Big Data" navigateTo="BigData" navigate={navigate} />
         </View>
     );
 }

@@ -25,9 +25,10 @@ export default class SWAPI extends React.Component {
                 <NumericInput
                     initValue={this.state.amount}
                     minValue={1}
-                    maxValue={35}
+                    maxValue={12}
                     onChange={amount => {
                         this.setState({ amount })
+                        console.log(this.state.amount);
                         this.getData();
                     }}
                 />
@@ -56,7 +57,7 @@ export default class SWAPI extends React.Component {
     }
     getData = async () => {
         const swPersons = await ApiFacade.starWarsFetch(this.state.amount);
-        this.setState({ swPersons });
+        this.setState({ swPersons }); 
     }
 }
 

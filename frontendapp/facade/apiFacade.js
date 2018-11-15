@@ -1,11 +1,14 @@
 import { AsyncStorage } from 'react-native';
 import { Base64 } from 'js-base64';
 
-const URL = "https://corporategroup.dk/CA3"
+// const URL = "https://perlt.net/CA3"
+const URL = "https://0b304646.ngrok.io"   
 
 async function handleHttpErrors(res) {
   if (!res.ok) {
-    return Promise.reject({ status: res.status, fullError: res.json() })
+    const fullError = await res.json();
+    throw { status: res.status, fullError };
+
   }
   const json = await res.json();
   json["status"] = res.status;
@@ -38,7 +41,7 @@ class ApiFacade {
   getToken = async () => {
     const res = await AsyncStorage.getItem("token");
     return res;
-  } 
+  }
 
   getTokenObject = async () => {
     const res = await AsyncStorage.getItem("token");
@@ -88,15 +91,23 @@ class ApiFacade {
   }
 
   //Returns promise - Contains array of all users
-  getUsers = () => {
-    const options = this.makeOptions("GET", true)
-    return fetch(URL + "/api/users", options).then(handleHttpErrors)
+  getUsers = async () => {
+    try {
+      const options = await this.makeOptions("GET", true)
+      const res = await fetch(URL + "/api/users", options);
+      const json = await await handleHttpErrors(res);
+      return json;
+    } catch (e) {
+      return e;
+    }
   }
 
   //Returns promise - Contains edited user {email and role}
-  editUser = (email) => {
-    const options = this.makeOptions("PUT", true)
-    return fetch(URL + `/api/users/${email}`, options).then(handleHttpErrors)
+  editUser = async (email) => {
+    const options = await this.makeOptions("PUT", true)
+    console.log(URL + `/api/users/${email}`);
+    const res = await fetch(URL + `/api/users/${email}`, options);
+    console.log(res);
   }
 
   //Returns promise - Contains array of all roles

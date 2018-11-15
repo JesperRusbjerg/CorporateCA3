@@ -14,6 +14,7 @@
     "js-base64": "^2.4.9",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-31.0.0.tar.gz",
+    "react-native-material-dropdown": "^0.11.1",
     "react-native-numeric-input": "^1.6.2",
     "react-native-vector-icons": "^6.0.2",
     "react-navigation": "^2.18.2"

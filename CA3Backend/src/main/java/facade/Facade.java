@@ -65,8 +65,7 @@ public class Facade {
             try {
                 PersonDTO resp = future.get();
                 res.add(resp);
-            }
-            catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw e;
             }
 
@@ -80,8 +79,7 @@ public class Facade {
         try {
             TypedQuery<UserDTO> tq = em.createQuery("Select new dto.UserDTO(u) from User u", UserDTO.class);
             list = tq.getResultList();
-        }
-        finally {
+        } finally {
             em.close();
         }
         if (list.get(0) == null) {
@@ -102,19 +100,19 @@ public class Facade {
             List<Role> roles = user.getRoleList();
             boolean addAdmin = true;
             for (Role role : roles) {
-                if(role.getRoleName().equals("admin")){
+                if (role.getRoleName().equals("admin")) {
                     roles.remove(role);
                     role.getUserList().remove(user);
                     addAdmin = false;
                 }
             }
-            if(addAdmin){
+            if (addAdmin) {
                 Role role = new Role("admin");
                 roles.add(role);
             }
             em.merge(user);
-        }
-        finally {
+            em.getTransaction().commit();
+        } finally {
             em.close();
         }
         return new UserDTO(user);
@@ -126,8 +124,7 @@ public class Facade {
         try {
             TypedQuery<RoleDTO> tq = em.createQuery("Select new dto.RoleDTO(r) from Role r", RoleDTO.class);
             list = tq.getResultList();
-        }
-        finally {
+        } finally {
             em.close();
         }
         if (list.get(0) == null) {
