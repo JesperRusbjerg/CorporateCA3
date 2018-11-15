@@ -80,7 +80,6 @@ public class UsersRest {
         String password = json.get("password").getAsString();
         User user = new User(email, password);
         facade.createUser(user);
-//        User loggedInUser = UserFacade.getInstance().getVeryfiedUser(email, password);
         String token = facade.createToken(email, user.getRolesAsStrings());
         JsonObject obj = new JsonObject();
         obj.addProperty("email", email);

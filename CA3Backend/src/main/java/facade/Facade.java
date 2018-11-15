@@ -13,6 +13,7 @@ import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dto.DummyDTO;
 import dto.PersonDTO;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
@@ -25,7 +26,6 @@ import dto.RoleDTO;
 import dto.UserDTO;
 import entity.Role;
 import entity.User;
-import exceptions.AuthenticationException;
 import exceptions.NotFoundException;
 import java.util.Date;
 import java.util.List;
@@ -69,9 +69,6 @@ public class Facade {
             urls.add("https://swapi.co/api/people/" + personIndex);
         }
 
-//        for (String url : urls) {
-//            System.out.println(url);
-//        }
         //Creating futures
         ArrayList<Future<PersonDTO>> futures = new ArrayList<>();
         for (String url : urls) {
@@ -135,17 +132,17 @@ public class Facade {
             }
             List<Role> roles = user.getRoleList();
             boolean addAdmin = true;
-            for (Role role : roles) {
-                if (role.getRoleName().equals("admin")) {
-                    roles.remove(role);
-                    role.getUserList().remove(user);
+            for (int i = 0; i < roles.size(); i++) {
+                if(roles.get(i).getRoleName().equals("admin")){
+                    roles.remove(roles.get(i));
                     addAdmin = false;
                 }
             }
-            if (addAdmin) {
-                Role role = new Role("admin");
-                roles.add(role);
+            
+            if(addAdmin){
+                roles.add(new Role("admin"));
             }
+
             em.merge(user);
             em.getTransaction().commit();
         } finally {
@@ -193,5 +190,31 @@ public class Facade {
         signedJWT.sign(signer);
         return signedJWT.serialize();
 
+    }
+
+    public List<DummyDTO> getDummyData(int start, int end) throws NotFoundException {
+        EntityManager em = getEm();
+        List<DummyDTO> list;
+        try {
+            TypedQuery<DummyDTO> tq = em.createQuery("Select new dto.DummyDTO(d) from Dummy d", DummyDTO.class);
+
+            //if start pagination is set
+            if (start > 0) {
+                tq.setFirstResult(start);
+            }
+
+            //if end pagination is set
+            if (end > 0) {
+                tq.setMaxResults((end - start));
+            }
+
+            list = tq.getResultList();
+        } finally {
+            em.close();
+        }
+        if (list.get(0) == null) {
+            throw new NotFoundException("No dummy data could be found");
+        }
+        return list;
     }
 }
