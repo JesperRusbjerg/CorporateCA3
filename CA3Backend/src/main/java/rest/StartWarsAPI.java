@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -34,6 +35,9 @@ public class StartWarsAPI {
     private Facade facade;
     private Gson gson;
     
+    @Context
+    SecurityContext securityContext;
+    
 
     /**
      * Creates a new instance of StartWarsAPI
@@ -47,8 +51,8 @@ public class StartWarsAPI {
      * Retrieves representation of an instance of rest.StartWarsAPI
      * @return an instance of java.lang.String
      */
-    @RolesAllowed({"user","admin"})
     @GET
+    @RolesAllowed({"user","admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getJson(@QueryParam("amount") int amount) throws Exception {
         System.out.println("amount: " + amount);
