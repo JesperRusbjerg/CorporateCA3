@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 17135,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://82-7rk.p3rlten.frontendapp.exp.direct",
   "packagerNgrokUrl": "https://packager.82-7rk.p3rlten.frontendapp.exp.direct",
-  "ngrokPid": 17175
+  "ngrokPid": 2350
 }
