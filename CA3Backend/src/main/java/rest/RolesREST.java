@@ -46,7 +46,7 @@ public class RolesREST {
     @GET
     @RolesAllowed({"admin"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJson() throws NotFoundException {
+    public Response getRoles() throws NotFoundException {
         List<RoleDTO> list = facade.getAllRoles();
         String json = gson.toJson(list);
         return Response.ok().entity(json).build();
