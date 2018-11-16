@@ -15,12 +15,15 @@ export default class MainMenu extends React.Component {
 
     async componentDidMount() {
         const token = await ApiFacade.getTokenObject();
-        console.log(token);
         this.setState({ token });
     }
-
     render() {
-        if (this.state.token.roles === "admin") {
+        if (!this.state.token.roles) {
+            return (
+                <View />
+            );
+        }
+        if (this.state.token.roles.includes("admin")) {
             return (
                 <View style={Styles.container}>
                     <DefaultMenu navigate={this.props.navigation.navigate} email={this.state.token.email} />
@@ -36,11 +39,11 @@ export default class MainMenu extends React.Component {
     }
 }
 
-function DefaultMenu({email, navigate}) {
+function DefaultMenu({ email, navigate }) {
     console.log(email);
     return (
         <View>
-            <Text style={{fontSize: 24, fontWeight: "bold"}}>
+            <Text style={{ fontSize: 24, fontWeight: "bold" }}>
                 Hallo {email}
             </Text>
             <MenuButton title="SWAPI" navigateTo="SWAPI" navigate={navigate} />
