@@ -1,4 +1,4 @@
-const URL = "https://www.corporategroup.dk/CA3"
+const URL = "https://www.adamlass.com/CA3"
 
 function jwtDecode(t) {
   let token = {};
@@ -11,9 +11,9 @@ function jwtDecode(t) {
 async function handleHttpErrors(res) {
   if (!res.ok) {
     const fullError = await res.json();
-   throw {status: res.status, fullError};
+    throw { status: res.status, fullError };
   }
-  
+
   return res.json();
 }
 
@@ -37,11 +37,16 @@ class ApiFacade {
 
 
   setToken = (token) => {
-    localStorage.setItem('jwtToken', token)
 
+    localStorage.setItem('jwtToken', token)
     var decoded = jwtDecode(token)
     localStorage.setItem('email', decoded.payload.email)
-    localStorage.setItem('role', decoded.payload.roles)
+    console.log(decoded.payload.roles)
+    if (decoded.payload.roles.includes("admin")) {
+      localStorage.setItem('role', 'admin')
+    } else {
+      localStorage.setItem('role', decoded.payload.roles)
+    }
   }
 
   getToken = () => {
@@ -61,50 +66,59 @@ class ApiFacade {
 
   login = async (email, pass) => {
     const options = this.makeOptions("POST", true, { email: email, password: pass })
-   try{ 
-    const res = await fetch(URL + "/api/login", options, true)
-    const json = await (handleHttpErrors(res))
-    this.setToken(json.token)
-   }catch(e){
-     return e;
-   }
+    try {
+      const res = await fetch(URL + "/api/login", options, true)
+      const json = await (handleHttpErrors(res))
+      this.setToken(json.token)
+    } catch (e) {
+      return e;
     }
-
-  signUp = (pass, email) => {
-    const options = this.makeOptions("POST", true, { password: pass, email: email })
-    fetch(URL + "api/login/create", options, true)
-      .then(handleHttpErrors)
-      .then(res => { this.setToken(res.token) })
   }
 
+  signUp = async (email, pass) => {
+    const options = this.makeOptions("POST", true, { email: email, password: pass })
+    try {
+      const res = await fetch(URL + "/api/users", options)
+      const json = await (handleHttpErrors(res))
+      this.setToken(json.token)
+    } catch (e) {
+      return e;
+    }
+  }
+
+
   //Returns promise - Contains array of StarWars characters
+
   starWarsFetch = async (amount) => {
     const options = this.makeOptions("GET", true)
     return await fetch(URL + `/api/swapi?amount=${amount}`, options, true).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of all users
-  getUsers = () => {
+  getUsers = async () => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + "/api/users", options, true).then(handleHttpErrors)
+    return await fetch(URL + "/api/users", options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains edited user {email and role}
-  editUser = (id) => {
+  editUser = async (email) => {
     const options = this.makeOptions("PUT", true)
-    return fetch(URL + `/api/users/${id}`, options, true).then(handleHttpErrors)
+    return await fetch(URL + `/api/users/${email}`, options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of all roles
-  getRoles = () => {
+  getRoles = async () => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + "/api/roles", options, true).then(handleHttpErrors)
+    return await fetch(URL + "/api/roles", options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of dummyData
-  getDummyData = (amount) => {
+  getDummyData = async (start, end, sortStr) => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + `/api/dummyData/${amount}`, options, true).then(handleHttpErrors)
+    const res = await fetch(URL + `/api/dummyData/?start=${start}&end=${end}${sortStr}`, options)
+    var u = URL + `/api/dummyData/?start=${start}&end=${end}${sortStr}`
+    console.log(u)
+    return await (handleHttpErrors(res))
   }
 }
 const facade = new ApiFacade();

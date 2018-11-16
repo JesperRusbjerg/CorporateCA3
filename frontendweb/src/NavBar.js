@@ -1,61 +1,71 @@
-import React from "react";
-import { Navbar, NavbarBrand, NavbarNav, NavItem, NavLink, NavbarToggler, Collapse, FormInline, Dropdown, DropdownToggle, DropdownMenu,  DropdownItem } from "mdbreact";
-
-class NavbarPage extends React.Component {
-
-  render() {
-    return (
-
-      <Navbar color="indigo" dark expand="md">
-          <NavbarBrand>
-            <strong className="white-text">Navbar</strong>
-          </NavbarBrand>
-          <NavbarToggler
-            onClick={this.toggleCollapse}
-          />
-         
-            <NavbarNav left>
-              <NavItem active>
-                <NavLink to="#!">Home</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to="#!">Features</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to="#!">Pricing</NavLink>
-              </NavItem>
-              <NavItem>
-                <Dropdown>
-                  <DropdownToggle nav caret>
-                    <div className="d-none d-md-inline">Dropdown</div>
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem href="#!">Action</DropdownItem>
-                    <DropdownItem href="#!">Another Action</DropdownItem>
-                    <DropdownItem href="#!">Something else here</DropdownItem>
-                    <DropdownItem href="#!">Something else here</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </NavItem>
-            </NavbarNav>
-            <NavbarNav right>
-              <NavItem>
-                <FormInline waves>
-                  <div className="md-form my-0">
-                    <input
-                      className="form-control mr-sm-2"
-                      type="text"
-                      placeholder="Search"
-                      aria-label="Search"
-                    />
-                  </div>
-                </FormInline>
-              </NavItem>
-            </NavbarNav>
-          
-      </Navbar>
-    );
+import React from 'react';
+import { BrowserRouter as Router, NavLink } from "react-router-dom"
+export default function NavBar(props) {
+  var role = props.role
+  
+  if(role == null){
+      return (
+        <div>
+          <ul className="header">
+            <li style={{ float: "right" }}>
+              <NavLink exact to="/">Login</NavLink>
+            </li>
+          </ul>
+          <hr />
+        </div>
+      )
+      }  
+  
+    else if (role === "user") {
+      return (
+        <div>
+          <ul className="header">
+            <li>
+              <NavLink exact to="/Router">Info</NavLink>
+            </li>
+            <li>
+              <NavLink exact to="/starwars">StarWars</NavLink>
+            </li>
+            <li>
+              <NavLink exact to="/largeinfo">Large Info</NavLink>
+            </li>
+            <li style={{ float: "right" }}>
+              <NavLink exact to="/logout">Log Out</NavLink>
+            </li>
+          </ul>
+  
+          <hr />
+        </div>
+      )
+    }
+  
+    else if  (role === "admin"){
+      return (
+        <div>
+          <ul className="header">
+            <li>
+              <NavLink exact to="/Router">Info</NavLink>
+            </li>
+            <li>
+              <NavLink exact to="/starwars">StarWars</NavLink>
+            </li>
+            <li>
+              <NavLink exact to="/largeinfo">Large Info</NavLink>
+            </li>
+            <li>
+              <NavLink exact to="/useredit">User Edit</NavLink>
+            </li>
+            <li style={{ float: "right" }}>
+              <NavLink exact to="/logout">Log Out</NavLink>
+            </li>
+          </ul>
+  
+          <hr />
+        </div>
+      )
+    }else{
+      return(
+<div></div>
+      );
+    }
   }
-}
-
-export default NavbarPage;
