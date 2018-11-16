@@ -5,41 +5,41 @@ React Native: https://expo.io/@p3rlten/ca3frontendapp
 Backend: https://corporategroup.dk/CA3/api
 
 # Endpoints:
+# /login
 @POST
-# /login 
 Param (String json) - Containing login details: email/password
 Returns viable token wrapped in a json object
 
+# /users
 @GET
 @RolesAllowed({"admin"})
-# /users
 Returns array og all users of the site
 
+# /users/email
 @PUT
 @Path("{email}")
 @RolesAllowed({"admin"})
-# /users/email
 PathParam email, containing the email of the user to be edited.
 Returns the user with a granted or revoked admin role
 
-@POST
 # /users
+@POST
 Param String json containing user details: email/password
 Returns a viable token wrapped in a json object
 
+# /swapi
 @GET
 @RolesAllowed({"user", "admin"})
-# /swapi
 QueryParam int amount to determin how many Star Wars characters to be returned
 
+# /roles
 @GET
 @RolesAllowed({"admin"})
-# /roles
 Returns an array of roles wrapped in a json object
 
+# /dummyData
 @GET
 @RolesAllowed({"user","admin"})
-# /dummyData
 QueryParam int start, int end, String sort (field names of the given entity), String order (asc/desc)
 Returns an array depending on the given QueryParams
 If no sort/order is given, the array wont be sorted
