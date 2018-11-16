@@ -133,13 +133,13 @@ public class Facade {
             List<Role> roles = user.getRoleList();
             boolean addAdmin = true;
             for (int i = 0; i < roles.size(); i++) {
-                if(roles.get(i).getRoleName().equals("admin")){
+                if (roles.get(i).getRoleName().equals("admin")) {
                     roles.remove(roles.get(i));
                     addAdmin = false;
                 }
             }
-            
-            if(addAdmin){
+
+            if (addAdmin) {
                 roles.add(new Role("admin"));
             }
 
@@ -192,11 +192,20 @@ public class Facade {
 
     }
 
-    public List<DummyDTO> getDummyData(int start, int end) throws NotFoundException {
+    public List<DummyDTO> getDummyData(int start, int end, String sort, String order) throws NotFoundException {
         EntityManager em = getEm();
         List<DummyDTO> list;
         try {
-            TypedQuery<DummyDTO> tq = em.createQuery("Select new dto.DummyDTO(d) from Dummy d", DummyDTO.class);
+            String jpql = "Select new dto.DummyDTO(d) from Dummy d";
+
+            if (sort != null) {
+                jpql += " ORDER BY d." + sort;
+                if (order != null) {
+                    jpql += " " + order.toUpperCase();
+                }
+            }
+
+            TypedQuery<DummyDTO> tq = em.createQuery(jpql, DummyDTO.class);
 
             //if start pagination is set
             if (start > 0) {

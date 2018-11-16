@@ -53,12 +53,11 @@ public class DummyData {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDummies(
             @QueryParam("start") int start,
-            @QueryParam("end") int end) throws NotFoundException
-            
-    
-    {
-        System.out.println("User: " + securityContext.getUserPrincipal().getName());
-        List<DummyDTO> dummies = facade.getDummyData(start, end);
+            @QueryParam("end") int end,
+            @QueryParam("sort") String sort,
+            @QueryParam("order") String order) throws NotFoundException {
+        
+        List<DummyDTO> dummies = facade.getDummyData(start, end, sort, order);
         return Response.ok()
                 .entity(gson.toJson(dummies))
                 .type(MediaType.APPLICATION_JSON)
