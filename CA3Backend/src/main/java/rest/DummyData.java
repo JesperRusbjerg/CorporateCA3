@@ -49,12 +49,15 @@ public class DummyData {
     
 
     @GET
-    @RolesAllowed({"admin"})
+    @RolesAllowed({"user","admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDummies(
             @QueryParam("start") int start,
-            @QueryParam("end") int end) throws NotFoundException {
-        System.out.println("Start: " + start + " - End: " + end);
+            @QueryParam("end") int end) throws NotFoundException
+            
+    
+    {
+        System.out.println("User: " + securityContext.getUserPrincipal().getName());
         List<DummyDTO> dummies = facade.getDummyData(start, end);
         return Response.ok()
                 .entity(gson.toJson(dummies))

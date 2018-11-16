@@ -20,7 +20,7 @@ import javax.persistence.Persistence;
 public class SetUpDummyData {
     public static void main(String[] args) {
         //Data amount
-        int amount = 1000;
+        int amount = 10000;
         
         //Generating dummy data
         List<Dummy> dummies = new ArrayList();
@@ -28,6 +28,7 @@ public class SetUpDummyData {
         String[] lNames = {"Lass", "Rusbjerg", "Perlt", "Helsgaun"};
         Random rnd = new Random();
         for (int i = 0; i < amount; i++) {
+            System.out.print("*");
             String fName = fNames[rnd.nextInt(fNames.length)];
             String lName = lNames[rnd.nextInt(lNames.length)];
             String gender = rnd.nextBoolean() ? "male" : "female";
