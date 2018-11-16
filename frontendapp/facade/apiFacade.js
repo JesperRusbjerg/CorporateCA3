@@ -1,8 +1,7 @@
 import { AsyncStorage } from 'react-native';
 import { Base64 } from 'js-base64';
 
-// const URL = "https://perlt.net/CA3"
-const URL = "https://0b304646.ngrok.io"   
+const URL = "https://corporategroup.dk/CA3"
 
 async function handleHttpErrors(res) {
   if (!res.ok) {
@@ -73,7 +72,7 @@ class ApiFacade {
   signUp = async (pass, email) => {
     try {
       const options = await this.makeOptions("POST", false, { password: pass, email: email })
-      const res = await fetch(URL + "/api/login/create", options);
+      const res = await fetch(URL + "/api/users", options);
       const json = await handleHttpErrors(res);
       await this.setToken(json.token);
       return json;
@@ -108,6 +107,8 @@ class ApiFacade {
     console.log(URL + `/api/users/${email}`);
     const res = await fetch(URL + `/api/users/${email}`, options);
     console.log(res);
+    const json = await handleHttpErrors(res);
+    console.log(json);
   }
 
   //Returns promise - Contains array of all roles
@@ -117,9 +118,15 @@ class ApiFacade {
   }
 
   //Returns promise - Contains array of dummyData
-  getDummyData = (amount) => {
-    const options = this.makeOptions("GET", true)
-    return fetch(URL + `/api/dummyData/${amount}`, options).then(handleHttpErrors)
+  getDummyData = async (start, end) => {
+    try {
+      const options = await this.makeOptions("GET", true);
+      const res = await fetch(URL + `/api/dummyData/?start=${start}&end=${end}`, options);
+      const json = await handleHttpErrors(res);
+      return json;
+    } catch (e) {
+      return e;
+    }
   }
 
   parseJwt = (token) => {

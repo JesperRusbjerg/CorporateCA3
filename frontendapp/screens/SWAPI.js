@@ -28,7 +28,6 @@ export default class SWAPI extends React.Component {
                     maxValue={12}
                     onChange={amount => {
                         this.setState({ amount })
-                        console.log(this.state.amount);
                         this.getData();
                     }}
                 />
