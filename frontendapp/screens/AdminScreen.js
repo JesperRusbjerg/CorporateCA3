@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableHighlight } from 'react-native';
+import { Text, View, TouchableHighlight, ScrollView } from 'react-native';
 import ApiFacade from './../facade/apiFacade';
 import Styles from './../styles/Styles';
 import { Dropdown } from 'react-native-material-dropdown';
@@ -14,7 +14,7 @@ export default class AdminScreen extends React.Component {
     render() {
         return (
             <View style={Styles.container}>
-                <UserList users={this.state.users} />
+                <UserList users={this.state.users} updateUsers={this.getUsers} />
             </View>);
     }
 
@@ -25,40 +25,47 @@ export default class AdminScreen extends React.Component {
 
 }
 
-function UserList({ users }) {
+function UserList({ users, updateUsers }) {
     return (
-        <View>
-            {
-                users.map((user, index) => {
-                    let msg = "Make Admin"
-                    const dropData = user.roles.map((role) => {
-                        if (role.roleName === "admin") msg = "Remove Admin"
-                        return { value: role.roleName };
+            <ScrollView style={{flex: 1} }  showsVerticalScrollIndicator={false}>
+                {
+                    users.map((user, index) => {
+                        let msg = "Make Admin"
+                        const dropData = user.roles.map((role) => {
+                            if (role.roleName === "admin") msg = "Remove Admin"
+                            return { value: role.roleName };
+                        })
+                        return (
+                            <View key={index}>
+                                <Text style={{ fontSize: 24, fontWeight: "bold" }}>
+                                    {user.email}
+                                </Text>
+                                <Dropdown
+                                    label='Roles'
+                                    data={dropData}
+                                />
+                                <TouchableHighlight onPress={() => editUser(user.email, updateUsers)}>
+                                    <View style={Styles.button}>
+                                        <Text style={Styles.buttonText}>
+                                            {msg}
+                                        </Text>
+                                    </View>
+                                </TouchableHighlight>
+                                <View
+                                    style={{
+                                        borderBottomColor: 'black',
+                                        borderBottomWidth: 3,
+                                    }}
+                                />
+                            </View>
+                        );
                     })
-                    return (
-                        <View key={index}>
-                            <Text>
-                                {user.email}
-                            </Text>
-                            <Dropdown
-                                label='Roles'
-                                data={dropData}
-                            />
-                            <TouchableHighlight onPress={() => editUser(user.email)}>
-                                <View style={Styles.button}>
-                                    <Text style={Styles.buttonText}>
-                                        {msg}
-                                    </Text>
-                                </View>
-                            </TouchableHighlight>
-                        </View>
-                    );
-                })
-            }
-        </View>
+                }
+            </ScrollView>
     )
 
-    async function editUser(email){
+    async function editUser(email, updateUsers) {
         const res = await ApiFacade.editUser(email);
+        updateUsers();
     }
 }
