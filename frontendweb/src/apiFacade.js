@@ -1,9 +1,19 @@
-const URL = ""
+const URL = "https://www.adamlass.com/CA3"
 
-function handleHttpErrors(res) {
+function jwtDecode(t) {
+  let token = {};
+  token.raw = t;
+  token.header = JSON.parse(window.atob(t.split('.')[0]));
+  token.payload = JSON.parse(window.atob(t.split('.')[1]));
+  return (token)
+}
+
+async function handleHttpErrors(res) {
   if (!res.ok) {
-    return Promise.reject({ status: res.status, fullError: res.json() })
+    const fullError = await res.json();
+    throw { status: res.status, fullError };
   }
+
   return res.json();
 }
 
@@ -25,8 +35,18 @@ class ApiFacade {
     return opts;
   }
 
+
   setToken = (token) => {
+
     localStorage.setItem('jwtToken', token)
+    var decoded = jwtDecode(token)
+    localStorage.setItem('email', decoded.payload.email)
+    console.log(decoded.payload.roles)
+    if (decoded.payload.roles.includes("admin")) {
+      localStorage.setItem('role', 'admin')
+    } else {
+      localStorage.setItem('role', decoded.payload.roles)
+    }
   }
 
   getToken = () => {
@@ -40,46 +60,66 @@ class ApiFacade {
 
   logout = () => {
     localStorage.removeItem("jwtToken");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
   }
 
-  login = (email, pass) => {
+  login = async (email, pass) => {
     const options = this.makeOptions("POST", true, { email: email, password: pass })
-    return fetch(URL + "/api/login", options).then(handleHttpErrors)
+    try {
+      const res = await fetch(URL + "/api/login", options, true)
+      const json = await (handleHttpErrors(res))
+      this.setToken(json.token)
+    } catch (e) {
+      return e;
+    }
   }
 
-  signUp = (pass, email) => {
-    const options = this.makeOptions("POST", true, { password: pass, email: email })
-    return fetch(URL + "api/login/create", options).then(handleHttpErrors)
+  signUp = async (email, pass) => {
+    const options = this.makeOptions("POST", true, { email: email, password: pass })
+    try {
+      const res = await fetch(URL + "/api/users", options)
+      const json = await (handleHttpErrors(res))
+      this.setToken(json.token)
+    } catch (e) {
+      return e;
+    }
   }
+
 
   //Returns promise - Contains array of StarWars characters
-  starWarsFetch = (amount) => {
-    const options = this.makeOptions("GET", true, { amount: amount })
-    return fetch(URL + "api/swapi", options).then(handleHttpErrors)
+
+  starWarsFetch = async (amount) => {
+    const options = this.makeOptions("GET", true)
+    return await fetch(URL + `/api/swapi?amount=${amount}`, options, true).then(handleHttpErrors)
+
   }
 
   //Returns promise - Contains array of all users
-  getUsers = () => {
+  getUsers = async () => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + "/api/users", options).then(handleHttpErrors)
+    return await fetch(URL + "/api/users", options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains edited user {email and role}
-  editUser = (email) => {
+  editUser = async (email) => {
     const options = this.makeOptions("PUT", true)
-    return fetch(URL + `/api/users/${email}`, options).then(handleHttpErrors)
+    return await fetch(URL + `/api/users/${email}`, options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of all roles
-  getRoles = () => {
+  getRoles = async () => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + "/api/roles", options).then(handleHttpErrors)
+    return await fetch(URL + "/api/roles", options).then(handleHttpErrors)
   }
 
   //Returns promise - Contains array of dummyData
-  getDummyData = (amount) => {
+  getDummyData = async (start, end, sortStr) => {
     const options = this.makeOptions("GET", true)
-    return fetch(URL + `/api/dummyData/${amount}`, options).then(handleHttpErrors)
+    const res = await fetch(URL + `/api/dummyData/?start=${start}&end=${end}${sortStr}`, options)
+    var u = URL + `/api/dummyData/?start=${start}&end=${end}${sortStr}`
+    console.log(u)
+    return await (handleHttpErrors(res))
   }
 }
 const facade = new ApiFacade();
