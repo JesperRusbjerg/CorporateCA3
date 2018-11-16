@@ -1,6 +1,6 @@
 # CorporateCA3
 
-React: http://corporateca3react.surge.sh/ \n
+React: http://corporateca3react.surge.sh/
 React Native: https://expo.io/@p3rlten/ca3frontendapp
 Backend: https://corporategroup.dk/CA3/api
 
