@@ -6,9 +6,13 @@
 package rest;
 
 import com.google.gson.Gson;
-import dto.PersonDTO;
+import com.google.gson.GsonBuilder;
+import dto.DummyDTO;
+import exceptions.NotFoundException;
 import facade.Facade;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.annotation.security.RolesAllowed;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
@@ -16,6 +20,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,47 +29,38 @@ import javax.ws.rs.core.SecurityContext;
 /**
  * REST Web Service
  *
- * @author adamlass
+ * @author Rasmus
  */
-@Path("swapi")
+@Path("dummyData")
+public class DummyData {
 
-public class StartWarsAPI {
+    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     @Context
     private UriInfo context;
-
     private Facade facade;
-    private Gson gson;
 
     @Context
     SecurityContext securityContext;
 
-    /**
-     * Creates a new instance of StartWarsAPI
-     */
-    public StartWarsAPI() {
+    public DummyData() {
         this.facade = new Facade(Persistence.createEntityManagerFactory("pu"));
-        this.gson = new Gson();
     }
+    
 
-    /**
-     * Retrieves representation of an instance of rest.StartWarsAPI
-     *
-     * @return an instance of java.lang.String
-     */
     @GET
-    @RolesAllowed({"user", "admin"})
+    @RolesAllowed({"user","admin"})
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getJson(@QueryParam("amount") int amount) throws Exception {
-//        int amount = 10;
-        System.out.println("amount: " + amount);
-        List<PersonDTO> persons = facade.SWAPI(amount);
-        return Response
-                .ok()
-                .entity(gson.toJson(persons))
+    public Response getDummies(
+            @QueryParam("start") int start,
+            @QueryParam("end") int end,
+            @QueryParam("sort") String sort,
+            @QueryParam("order") String order) throws NotFoundException {
+        
+        List<DummyDTO> dummies = facade.getDummyData(start, end, sort, order);
+        return Response.ok()
+                .entity(gson.toJson(dummies))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
-
     }
-
 }

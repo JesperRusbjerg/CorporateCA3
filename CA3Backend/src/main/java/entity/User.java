@@ -36,7 +36,7 @@ public class User implements Serializable {
   @ManyToMany
   private List<Role> roleList = new ArrayList();
   
-  private String salt;
+  
 
   public List<String> getRolesAsStrings() {
     if (roleList.isEmpty()) {
@@ -53,14 +53,12 @@ public class User implements Serializable {
 
   //TODO Change when password is hashed
    public boolean verifyPassword(String pw){
-        String hashed = BCrypt.hashpw(pw, salt);
-        System.out.println("SALT: " + salt);
         return BCrypt.checkpw(pw, userPass);
     }
 
   public User(String email, String userPass) {
     this.email = email;
-    salt = BCrypt.gensalt();
+    String salt = BCrypt.gensalt();
     this.userPass = BCrypt.hashpw(userPass, salt);
    
   }

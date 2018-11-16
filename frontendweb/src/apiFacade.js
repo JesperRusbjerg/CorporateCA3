@@ -92,7 +92,6 @@ class ApiFacade {
   starWarsFetch = async (amount) => {
     const options = this.makeOptions("GET", true)
     return await fetch(URL + `/api/swapi?amount=${amount}`, options, true).then(handleHttpErrors)
-
   }
 
   //Returns promise - Contains array of all users

@@ -11,6 +11,7 @@ import dto.RoleDTO;
 import exceptions.NotFoundException;
 import facade.Facade;
 import java.util.List;
+import javax.annotation.security.RolesAllowed;
 import javax.persistence.Persistence;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -19,6 +20,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 /**
  * REST Web Service
@@ -32,6 +34,9 @@ public class RolesREST {
     Facade facade;
     @Context
     private UriInfo context;
+    
+    @Context
+    SecurityContext securityContext;
 
     public RolesREST() {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
@@ -39,6 +44,7 @@ public class RolesREST {
     }
 
     @GET
+    @RolesAllowed({"admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getJson() throws NotFoundException {
         List<RoleDTO> list = facade.getAllRoles();
