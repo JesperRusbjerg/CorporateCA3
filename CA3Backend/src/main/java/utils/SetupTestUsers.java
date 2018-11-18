@@ -15,6 +15,7 @@ public class SetupTestUsers {
         // This breaks one of the MOST fundamental security rules in that it ships with default users and passwords
         // CHANGE the three passwords below, before you uncomment and execute the code below
 //    throw new UnsupportedOperationException("REMOVE THIS LINE, WHEN YOU HAVE READ WARNING");
+        
         em.getTransaction().begin();
         Role userRole = new Role("user");
         Role adminRole = new Role("admin");

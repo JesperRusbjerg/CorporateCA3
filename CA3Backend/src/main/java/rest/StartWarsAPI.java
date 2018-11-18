@@ -27,7 +27,6 @@ import javax.ws.rs.core.SecurityContext;
  * @author adamlass
  */
 @Path("swapi")
-
 public class StartWarsAPI {
 
     @Context
